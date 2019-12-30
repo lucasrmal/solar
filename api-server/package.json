@@ -1,0 +1,15 @@
+{
+  "name": "solar-api-server",
+  "version": "1.0.0",
+  "description": "API to serve solar production data",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Lucas Rioux-Maldague",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "express": "^4.17.1",
+    "sqlite3": "^4.1.1"
+  }
+}
