@@ -1,5 +1,5 @@
 const sqlite3 = require('sqlite3').verbose();
-const kDatabasePath = "../../demo-database.db";
+const kDatabasePath = "./database.db";
  
 // open the database
 let db = new sqlite3.Database(kDatabasePath, sqlite3.OPEN_READONLY, (err) => {
