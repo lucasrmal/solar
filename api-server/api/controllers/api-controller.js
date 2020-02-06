@@ -60,9 +60,6 @@ function _query(num_datapoints, aggregation, year, month, day, hour, res) {
 
   end_date.add(-1).hour();
 
-  console.log(start_date.toISOString());
-  console.log(end_date.toISOString());
-
   var full_query = `
     WITH RECURSIVE dates(date) AS ( 
       SELECT ? 
@@ -84,8 +81,6 @@ function _query(num_datapoints, aggregation, year, month, day, hour, res) {
     )
     GROUP BY ${aggregate_list}
     ORDER BY ${aggregate_list};`;
-
-  // console.log(full_query);
 
   db.all(full_query, [start_date.toISOString(), end_date.toISOString()], (err, rows) => {
     if (err) {
