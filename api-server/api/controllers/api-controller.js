@@ -1,26 +1,26 @@
-var db = require("../models/database.js")
-require('datejs')
+var db = require("../models/database.js");
+var moment = require('moment');
 
 function _query(num_datapoints, aggregation, year, month, day, hour, res) {
   if (num_datapoints < 1 || num_datapoints > 366) {
     throw "Invalid number of data points.";
   }
 
-  switch (aggregation) {
-    case "year":
-      month = 1;
-      // FALLTHROUGH_INTENDED
-    case "month":
-      day = 1;
-      // FALLTHROUGH_INTENDED
-    case "day":
-      hour = 0;
-      // FALLTHROUGH_INTENDED
-    case "hour":
-      break;
-    default:
-    throw "Invalid aggregation.";
-  }
+  // switch (aggregation) {
+  //   case "year":
+  //     month = 1;
+  //     // FALLTHROUGH_INTENDED
+  //   case "month":
+  //     day = 1;
+  //     // FALLTHROUGH_INTENDED
+  //   case "day":
+  //     hour = 0;
+  //     // FALLTHROUGH_INTENDED
+  //   case "hour":
+  //     break;
+  //   default:
+  //   throw "Invalid aggregation.";
+  // }
 
   if (year < 2000 || year > 3000) {
     throw "Invalid year.";
@@ -35,30 +35,35 @@ function _query(num_datapoints, aggregation, year, month, day, hour, res) {
     throw "Invalid hour.";
   }
 
-  var start_date = new Date(Date.UTC(year, month-1, day, hour));
-  var end_date = new Date(start_date);
+  var start_date = moment.utc([year, month-1, day, hour]);
+  var end_date = start_date.clone();
   var aggregate_list;
 
   switch (aggregation) {
     case "year":
-      end_date.add(num_datapoints).year();
+      end_date.add(num_datapoints, 'year');
       aggregate_list = "year";
       break;
     case "month":
-      end_date.add(num_datapoints).month();
+      end_date.add(num_datapoints, 'month');
       aggregate_list = "year, month";
       break;
     case "day":
-      end_date.add(num_datapoints).day();
+      end_date.add(num_datapoints, 'day');
       aggregate_list = "year, month, day";
       break;
     case "hour":
-      end_date.add(num_datapoints).hour();
+      end_date.add(num_datapoints, 'hour');
       aggregate_list = "year, month, day, hour";
       break;
+    default:
+      throw "Invalid aggregation.";
   }
 
-  end_date.add(-1).hour();
+  end_date.subtract(1, 'hours');
+
+  console.log(start_date.format("YYYY-MM-DD HH:mm"));
+  console.log(end_date.format("YYYY-MM-DD HH:mm"));
 
   var full_query = `
     WITH RECURSIVE dates(date) AS ( 
@@ -82,7 +87,7 @@ function _query(num_datapoints, aggregation, year, month, day, hour, res) {
     GROUP BY ${aggregate_list}
     ORDER BY ${aggregate_list};`;
 
-  db.all(full_query, [start_date.toISOString(), end_date.toISOString()], (err, rows) => {
+  db.all(full_query, [start_date.format("YYYY-MM-DD HH:mm"), end_date.format("YYYY-MM-DD HH:mm")], (err, rows) => {
     if (err) {
       console.error(err.message);
       throw "INTERNAL_SERVER_ERROR";
