@@ -14,3 +14,8 @@ app.listen(port);
 
 console.log('Solar Meter started on: ' + port);
 
+var merge_controller = require('./api/controllers/merge-controller');
+merge_controller.scheduleMergeProduction();
+
+console.log('Scheduled MergeProduction');
+

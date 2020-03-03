@@ -20,7 +20,7 @@ function _checkApiKey(api_key, ok_callback, unauthorized_callback) {
 function _doUpdate(watts, res) {
   var sql = "INSERT OR IGNORE INTO RawProduction(year, month, day, hour, minute, watts) VALUES(?, ?, ?, ?, ?, ?)";
   var now = moment().utc();
-  var values = [now.format("YYYY"), now.format("M"), now.format("D"), now.format("h"), now.format("m"), watts];
+  var values = [now.format("YYYY"), now.format("M"), now.format("D"), now.format("H"), now.format("m"), watts];
 
   db.run(sql, values, (err) => {
     if (err) {
