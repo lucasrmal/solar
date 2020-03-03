@@ -7,10 +7,10 @@ app.use(body_parser.urlencoded({ extended: true }));
 app.use(body_parser.json());
 app.use(express.static('public'));
 
-var routes = require('./api/routes/api-routes');
+var routes = require('./api/routes/routes');
 routes(app);
 
 app.listen(port);
 
-console.log('Solar API server started on: ' + port);
+console.log('Solar Meter started on: ' + port);
 

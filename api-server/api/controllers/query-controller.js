@@ -1,38 +1,23 @@
 var db = require("../models/database.js");
 var moment = require('moment');
+var common = require("../common.js");
 
 function _query(num_datapoints, aggregation, year, month, day, hour, res) {
   if (num_datapoints < 1 || num_datapoints > 366) {
-    throw "Invalid number of data points.";
+    return common.malformedQuery("Invalid number of data points.", res);
   }
-
-  // switch (aggregation) {
-  //   case "year":
-  //     month = 1;
-  //     // FALLTHROUGH_INTENDED
-  //   case "month":
-  //     day = 1;
-  //     // FALLTHROUGH_INTENDED
-  //   case "day":
-  //     hour = 0;
-  //     // FALLTHROUGH_INTENDED
-  //   case "hour":
-  //     break;
-  //   default:
-  //   throw "Invalid aggregation.";
-  // }
 
   if (year < 2000 || year > 3000) {
-    throw "Invalid year.";
+    return common.malformedQuery("Invalid year.", res);
   }
   if (month < 1 || month > 12) {
-    throw "Invalid month.";
+    return common.malformedQuery("Invalid month.", res);
   }
   if (day < 1 || day > 31) {
-    throw "Invalid day.";
+    return common.malformedQuery("Invalid day.", res);
   }
   if (hour < 0 || hour > 23) {
-    throw "Invalid hour.";
+    return common.malformedQuery("Invalid hour.", res);
   }
 
   var start_date = moment.utc([year, month-1, day, hour]);
@@ -57,7 +42,7 @@ function _query(num_datapoints, aggregation, year, month, day, hour, res) {
       aggregate_list = "year, month, day, hour";
       break;
     default:
-      throw "Invalid aggregation.";
+      return common.malformedQuery("Invalid aggregation.", res);
   }
 
   end_date.subtract(1, 'hours');
@@ -89,9 +74,7 @@ function _query(num_datapoints, aggregation, year, month, day, hour, res) {
 
   db.all(full_query, [start_date.format("YYYY-MM-DD HH:mm"), end_date.format("YYYY-MM-DD HH:mm")], (err, rows) => {
     if (err) {
-      console.error(err.message);
-      throw "INTERNAL_SERVER_ERROR";
-      return;
+      return common.internalError(err.message);
     }
 
     var query_data = [];
@@ -102,30 +85,13 @@ function _query(num_datapoints, aggregation, year, month, day, hour, res) {
   });
 }
 
-function _parseIntParam(param, req) {
-  var integer = -1;
-  if (req.query.hasOwnProperty(param)) {
-    integer = parseInt(req.query[param], 10);
-    if (integer == NaN) { integer = 0; }
-  }
-  return integer;
-}
-
 exports.query = function(req, res) {
-  var num_datapoints = _parseIntParam("num", req);
-  var aggregation = req.query.hasOwnProperty("agg") ? req.query.agg : "";
-  var year = _parseIntParam("year", req);
-  var month = _parseIntParam("month", req);
-  var day = _parseIntParam("day", req);
-  var hour = _parseIntParam("hour", req);
+  var num_datapoints = common.getIntParam("num", req);
+  var aggregation = common.getStringParam("agg", req);
+  var year = common.getIntParam("year", req);
+  var month = common.getIntParam("month", req);
+  var day = common.getIntParam("day", req);
+  var hour = common.getIntParam("hour", req);
 
-  try {
-    _query(num_datapoints, aggregation, year, month, day, hour, res);
-  } catch (err) {
-    if (err == "INTERNAL_SERVER_ERROR") {
-      res.json({"status": "INTERNAL_SERVER_ERROR"});
-    } else {
-      res.json({"status": "MALFORMED_QUERY", "description" : err});
-    }
-  }
+  _query(num_datapoints, aggregation, year, month, day, hour, res);
 }
