@@ -15,10 +15,14 @@ exports.getStringParam = function(param, req) {
 };
 
 exports.internalError = function(err_msg, res) {
-  console.error(err);
+  console.error(err_msg);
   res.status(500).end();
 }
 
 exports.malformedQuery = function(err_msg, res) {
   res.json({"status": "MALFORMED_QUERY", "description" : err_msg});
+}
+
+exports.unauthorized = function(res) {
+  res.status(403).end();
 }

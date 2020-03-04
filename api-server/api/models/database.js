@@ -1,15 +1,8 @@
-const sqlite3 = require('sqlite3').verbose();
-var TransactionDatabase = require("sqlite3-transactions").TransactionDatabase;
+const Database = require('better-sqlite3');
 
-const kDatabasePath = "./database.db";
- 
-// open the database
-let db = new TransactionDatabase(new sqlite3.Database(kDatabasePath, sqlite3.OPEN_READWRITE, (err) => {
-  if (err) {
-    console.error(err.message);
-    throw err;
-  }
-  console.log('Connected to the solar database.');
-}));
+const kDatabasePath = './database.db';
+
+const db = new Database(kDatabasePath, {'fileMustExist': true});
+console.log('Connected to the solar database.');
 
 module.exports = db

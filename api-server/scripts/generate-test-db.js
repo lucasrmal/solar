@@ -13,10 +13,10 @@ function _generateData(start_date, num) {
       day_factor = Math.min(Math.random() + 0.4, 1.0);
     }
     var value = base * day_factor * month_factor[start_date.month()] * hour_factor[start_date.hour()];
-    data.push({"year": start_date.format("YYYY"), 
-               "month": start_date.format("M"),
-               "day": start_date.format("D"),
-               "hour": start_date.format("H"),
+    data.push({"year": start_date.format('YYYY'), 
+               "month": start_date.format('M'),
+               "day": start_date.format('D'),
+               "hour": start_date.format('H'),
                "watt_hour": value
              });
     start_date.add(1, 'hour');
