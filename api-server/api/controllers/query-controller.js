@@ -20,7 +20,7 @@ function _query(num_datapoints, aggregation, year, month, day, hour, res) {
     return common.malformedQuery("Invalid hour.", res);
   }
 
-  var start_date = moment.utc([year, month-1, day, hour]);
+  var start_date = moment([year, month-1, day, hour]);
   var end_date = start_date.clone();
   var aggregate_list;
 
@@ -46,9 +46,6 @@ function _query(num_datapoints, aggregation, year, month, day, hour, res) {
   }
 
   end_date.subtract(1, 'hours');
-
-  console.log(start_date.format("YYYY-MM-DD HH:mm"));
-  console.log(end_date.format("YYYY-MM-DD HH:mm"));
 
   var full_query = `
     WITH RECURSIVE dates(date) AS ( 

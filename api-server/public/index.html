@@ -110,30 +110,30 @@
 
     function queryAndDisplayChart(start_date, num_datapoints, aggregation, callback) {
       $.getJSON(`/query?agg=${aggregation}&year=${start_date.year()}&month=${start_date.month()+1}&day=${start_date.date()}&hour=${start_date.hours()}&num=${num_datapoints}`, function(res) {
-        if (res.status != "OK") {
-          console.log("Received error from server: " + res.description);
+        if (res.status != 'OK') {
+          console.log('Received error from server: ' + res.description);
           return;
         }
         callback(res.data);
       }); 
     }
 
-    var start_of_today = moment().startOf("day").utc();
+    var start_of_today = moment().startOf('day');
     var thirty_days_ago = start_of_today.clone().subtract(29, 'days');
-    var one_year_ago = moment().startOf('month').subtract(11, 'months').utc();
+    var one_year_ago = moment().startOf('month').subtract(11, 'months');
 
-    queryAndDisplayChart(start_of_today, 24, "hour", (data) => {
-      displayChart("dayChart", "Time", generateHourLabels(), data);
+    queryAndDisplayChart(start_of_today, 24, 'hour', (data) => {
+      displayChart('dayChart', 'Time', generateHourLabels(), data);
     });
 
-    queryAndDisplayChart(thirty_days_ago, 30, "day", (data) => {
+    queryAndDisplayChart(thirty_days_ago, 30, 'day', (data) => {
       thirty_days_ago.local();
-      displayChart("last30DaysChart", "Day", generateDayOfMonthLabels(thirty_days_ago, 30), data);
+      displayChart('last30DaysChart', 'Day', generateDayOfMonthLabels(thirty_days_ago, 30), data);
     });
 
-    queryAndDisplayChart(one_year_ago, 12, "month", (data) => {
+    queryAndDisplayChart(one_year_ago, 12, 'month', (data) => {
       one_year_ago.local();
-      displayChart("last12MonthChart", "Month", generateMonthLabels(one_year_ago), data);
+      displayChart('last12MonthChart', 'Month', generateMonthLabels(one_year_ago), data);
     });  
   </script>
 </body>

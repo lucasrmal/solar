@@ -6,7 +6,7 @@ var cron = require('node-cron');
 // commits it to the "clean" table, then gets rid of the raw entries.
 // Calls `callback` with OK or ERROR depending on the result.
 function _mergeProduction(callback) {
-  var now = moment().utc();
+  var now = moment();
   var params = [now.format("YYYY"), now.format("M"), now.format("D"), now.format("H")];
 
   db.beginTransaction((err, transaction) => {
