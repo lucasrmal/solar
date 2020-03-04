@@ -1,139 +1,43 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <title>Solar Meter</title>
+  <link rel="icon" href="img/favicon.png">
   <script type="text/javascript" src="/js/Chart.bundle.min.js"> </script>
   <script type="text/javascript" src="/js/jquery-3.4.1.min.js"> </script>
   <script type="text/javascript" src="/js/moment-with-locales.min.js"> </script>
+  <script type="text/javascript" src="/js/solar.js"> </script>
+  <style>
+    .chart-spacer {
+      height:20px;
+    }
+  </style>
 </head>
 <body>
-  <span id="mySpan" />
-  <div><canvas id="dayChart" width="400" height="400"></canvas></div>
-  <div><canvas id="last30DaysChart" width="400" height="400"></canvas></div>
-  <div><canvas id="last12MonthChart" width="400" height="400"></canvas></div>
+  <h1>Solar Meter</h1>
+  <div><a href="/drill_down.html">Drill Down</a></div>
+  <div><canvas id="dayChart" width="400" height="80"></canvas></div>
+  <div class="chart-spacer"></div>
+  <div><canvas id="last30DaysChart" width="400" height="80"></canvas></div>
+  <div class="chart-spacer"></div>
+  <div><canvas id="last12MonthChart" width="400" height="80"></canvas></div>
   <script>
-    function generateHourLabels() {
-      var labels = [];
-      for (var h = 0; h < 24; ++h) {
-        labels.push(`${h}:00`);
-      }
-      return labels;
-    }
-
-    function generateWeekdayLabels(start_index) {
-      var labels = [];
-      var days_of_week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", 'Saturday', "Sunday"];
-      var h = start_index;
-      do {
-        labels.push(days_of_week[h]);
-        h = (h+1) % 7;
-      } while (h != start_index);
-      return labels;
-    }
-
-    function generateDayOfMonthLabels(start_date, num_days) {
-      var labels = [];
-      for (var i = 0; i < num_days; ++i) {
-        labels.push((start_date.month()+1) + "/" + (start_date.date()));
-        start_date.add(1, "day");
-      }
-      return labels;
-    }
-
-    function generateMonthLabels(start_date) {
-      var labels = [];
-      var months = ["Jan", "Feb", "Mar", "Apr", 
-                    "May", "Jun", "Jul", "Aug", "Sep", 
-                    "Oct", "Nov", "Dec"];
-      for (var i = 0; i < 12; ++i) {
-        labels.push(months[start_date.month()] + " " + start_date.year());
-        start_date.add(1, "month");
-      }
-      return labels;
-    }
-    
-    function displayChart(elementId, xAxisLabel, labels, solar_data) {
-      if (solar_data.length != labels.length) {
-        console.error(`Size mismatch between data (${solar_data.length}) and labels (${labels.length}!`);
-        return;
-      }
-      var ctx = document.getElementById(elementId).getContext('2d');
-      var myChart = new Chart(ctx, {
-          type: 'bar',
-          data: {
-              labels: labels,
-              datasets: [{
-              data: solar_data,
-              // backgroundColor: [
-              //     'rgba(255, 99, 132, 0.2)',
-              //     'rgba(54, 162, 235, 0.2)',
-              //     'rgba(255, 206, 86, 0.2)',
-              //     'rgba(75, 192, 192, 0.2)',
-              //     'rgba(153, 102, 255, 0.2)',
-              //     'rgba(255, 159, 64, 0.2)'
-              // ],
-              // borderColor: [
-              //     'rgba(255, 99, 132, 1)',
-              //     'rgba(54, 162, 235, 1)',
-              //     'rgba(255, 206, 86, 1)',
-              //     'rgba(75, 192, 192, 1)',
-              //     'rgba(153, 102, 255, 1)',
-              //     'rgba(255, 159, 64, 1)'
-              // ],
-              borderWidth: 1
-              }]
-          },
-          options: {
-              title: {
-                display: true,
-                text: "My Chart!",
-              },
-              scales: {
-                  yAxes: [{
-                      ticks: {
-                          beginAtZero: true
-                      },
-                      scaleLabel: {
-                        labelString: 'kWh',
-                        display: true
-                      }
-                  }],
-                  xAxes: [{
-                      scaleLabel: {
-                        labelString: xAxisLabel,
-                        display: true
-                      }
-                  }]
-              }
-          }
-      });
-    }
-
-    function queryAndDisplayChart(start_date, num_datapoints, aggregation, callback) {
-      $.getJSON(`/query?agg=${aggregation}&year=${start_date.year()}&month=${start_date.month()+1}&day=${start_date.date()}&hour=${start_date.hours()}&num=${num_datapoints}`, function(res) {
-        if (res.status != 'OK') {
-          console.log('Received error from server: ' + res.description);
-          return;
-        }
-        callback(res.data);
-      }); 
-    }
-
     var start_of_today = moment().startOf('day');
     var thirty_days_ago = start_of_today.clone().subtract(29, 'days');
     var one_year_ago = moment().startOf('month').subtract(11, 'months');
 
     queryAndDisplayChart(start_of_today, 24, 'hour', (data) => {
-      displayChart('dayChart', 'Time', generateHourLabels(), data);
+      displayChart('dayChart', 'Today ' + start_of_today.format('MMMM Do YYYY'), 'Time', generateHourLabels(), data);
     });
 
     queryAndDisplayChart(thirty_days_ago, 30, 'day', (data) => {
       thirty_days_ago.local();
-      displayChart('last30DaysChart', 'Day', generateDayOfMonthLabels(thirty_days_ago, 30), data);
+      displayChart('last30DaysChart', 'Last 30 Days', 'Day', generateDayOfMonthLabels(thirty_days_ago, 30), data);
     });
 
     queryAndDisplayChart(one_year_ago, 12, 'month', (data) => {
       one_year_ago.local();
-      displayChart('last12MonthChart', 'Month', generateMonthLabels(one_year_ago), data);
+      displayChart('last12MonthChart', 'Last 12 Months', 'Month', generateMonthLabels(one_year_ago), data);
     });  
   </script>
 </body>
