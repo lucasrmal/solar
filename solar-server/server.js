@@ -7,15 +7,12 @@ app.use(body_parser.urlencoded({ extended: true }));
 app.use(body_parser.json());
 app.use(express.static('public'));
 
-var routes = require('./api/routes/routes');
+var routes = require('./server/routes/routes');
 routes(app);
 
 app.listen(port);
-
 console.log('Solar Meter started on: ' + port);
 
-var merge_controller = require('./api/controllers/merge-controller');
+var merge_controller = require('./server/controllers/merge-controller');
 merge_controller.scheduleMergeProduction();
-
-console.log('Scheduled MergeProduction');
 

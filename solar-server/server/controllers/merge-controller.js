@@ -24,19 +24,20 @@ function _mergeProduction() {
      WHERE year < @year OR month < @month OR day < @day OR hour < @hour`);
 
   var transaction = db.transaction(() => {
-    console.log(insert_stmt.run(params).changes);
-    console.log(delete_stmt.run(params).changes);
+    insert_stmt.run(params);
+    delete_stmt.run(params);
   });
   transaction();
 }
 
 exports.scheduleMergeProduction = function() {
-  // cron.schedule('7 * * * *', () => {
+  cron.schedule('5 * * * *', () => {
     try {      
       _mergeProduction();
       console.log('Succesfully merged production data for past hours.');
     } catch (err) {
       console.error(err);
     }
-  // });
+  });
+  console.log('Scheduled MergeProduction at :05 every hour.');
 }
