@@ -1,0 +1,13 @@
+[Unit]
+Description=Solar Meter Server
+Documentation=https://github.com/lucasrmal/solar
+After=network.target
+
+[Service]
+Environment="SOLAR_METER_PORT=80"
+Type=simple
+ExecStart=/usr/bin/node /opt/solar_meter/server.js
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
