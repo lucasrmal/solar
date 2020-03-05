@@ -5,7 +5,7 @@ To create a test database:
 > node scripts/generate-test-db.js database.db
 
 To install the package:
-- Copy the provided `solar_meter.service` in `/lib/systemd/system/`
+- Copy the provided `solar-meter.service` in `/lib/systemd/system/`
 - Install the package under `/opt/solar_meter`
 - Create the database
-- Start it: `sudo service solar_meter start`
+- Start it: `sudo service solar-meter start`

@@ -1,11 +1,11 @@
 var express = require('express'),
   app = express(),
-  port = process.env.PORT || 3000,
+  port = process.env.SOLAR_METER_PORT || 3000,
   body_parser = require('body-parser');
 
 app.use(body_parser.urlencoded({ extended: true }));
 app.use(body_parser.json());
-app.use(express.static('public'));
+app.use(express.static(__dirname + '/public'));
 
 var routes = require('./server/routes/routes');
 routes(app);
